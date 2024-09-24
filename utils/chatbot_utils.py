@@ -1,7 +1,7 @@
 import streamlit as st
 
 from utils.llm_utils import refresh_db
-from utils.google_sheet_utils import get_case_descriptions_from_case_ids
+from utils.google_sheet_utils import get_case_descriptions_from_case_ids, get_case_sheet_as_dict
 
 def fetch_similar_data(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -27,6 +27,16 @@ def fetch_similar_data(prompt):
             "related_observations": related_observations,
             "related_cases": related_cases,
             "related_cases_similarity": related_cases_similarity}
+
+def fetch_real_time_gsheets_data(prompt):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    return {"question": prompt, 
+            "related_observations": "None",
+            "related_cases": json.dumps(get_case_sheet_as_dict()),
+            "related_cases_similarity": "None"}
 
 def update_session(output):
     # Update the conversation history
