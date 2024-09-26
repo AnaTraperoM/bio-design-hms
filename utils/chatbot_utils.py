@@ -33,8 +33,6 @@ def fetch_real_time_gsheets_data(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-    with st.chat_message("user"):
-        st.markdown(json.dumps(get_case_sheet_as_dict()))
 
     return {"question": prompt, 
             "related_observations": "None",
