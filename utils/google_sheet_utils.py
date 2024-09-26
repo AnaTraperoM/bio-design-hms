@@ -42,7 +42,7 @@ def create_new_chat_sheet():
 #     return data
 
 def get_case_sheet_as_dict():
-    case_sheet = CLIENT.open("2024 Healthtech Identify Log").worksheet("Case Log")
+    case_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Case Log")
     data = case_sheet.get_all_records()
     return data
 
