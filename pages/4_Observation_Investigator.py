@@ -15,7 +15,7 @@ add_investigator_formatting()
 initialize_investigator_session()
 
 # Handle new input
-if user_input := st.chat_input("What would you like to ask?"):
+if user_input := st.chat_input("What would you like to ask ?"):
 
     # show the user input
     with st.chat_message("user"):
