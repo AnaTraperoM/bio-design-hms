@@ -67,4 +67,4 @@ def update_session(output):
         st.markdown(output)
 
     # Store chat in the current sheet
-    st.session_state.chat_sheet.append_row([st.session_state.messages[-2]['content'], st.session_state.messages[-1]['content']])
+    st.session_state.chat_sheet.append_row([st.session_state.messages[-2].content, st.session_state.messages[-1].content])
