@@ -3,7 +3,8 @@ import streamlit as st
 
 from langchain.schema import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains import create_retrieval_chain
+from langchain.chains import create_retrieval_chain, create_history_aware_retriever, create_stuff_documents_chain
+from langchain_core.prompts import MessagesPlaceholder
 
 from utils.llm_utils import refresh_db
 from utils.llm_utils import create_llm, get_prompt
@@ -46,22 +47,56 @@ def fetch_real_time_gsheets_data(user_input):
             "observations_from_cases": "None"
             }
 
+
+def get_retreiver_chain(vector_store):
+  
+  llm=create_llm()
+  retriever = vector_store.as_retriever()
+  prompt = ChatPromptTemplate.from_messages([
+      MessagesPlaceholder(variable_name="chat_history"),
+      ("user", "{input}"),
+      ("user", "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation")
+  ])
+  history_retriver_chain = create_history_aware_retriever(llm, retriever, prompt)
+  
+  return history_retriver_chain
+
+
+def get_conversational_rag(history_retriever_chain):
+  llm=create_llm()
+
+  answer_prompt=ChatPromptTemplate.from_messages([
+      ("system", "Answer the user's questions based on the below context: \n\n{context}"),
+      MessagesPlaceholder(variable_name="chat_history"),
+      ("user", "{input}")
+  ])
+
+  document_chain = create_stuff_documents_chain(llm, answer_prompt)
+
+  #create final retrieval chain
+  conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
+
+  return conversational_retrieval_chain
+
+
 def get_chat_response(user_input):
 
     llm = create_llm()
 
     updated_observations_db = refresh_db(namespace_to_refresh="observations")
-    observations_retriever = updated_observations_db.as_retriever()
+
+    observations_retriever_chain = get_retreiver_chain(updated_observations_db)
+    conversation_rag_chain = get_conversational_rag(observations_retriever_chain)
 
     # full_prompt = ChatPromptTemplate.from_messages(
     #     st.session_state.messages
     #     )
-    observation_chat_prompt_chain = get_prompt() | llm | StrOutputParser()
-    observation_chat_chain = create_retrieval_chain(observations_retriever, observation_chat_prompt_chain)
+    response = conversation_rag_chain.invoke({
+        "chat_history": st.session_state.messages,
+        "input": user_input
+    })
 
-    new_output = observation_chat_chain.invoke(fetch_real_time_gsheets_data(user_input),)
-    
-    return new_output
+    return response["answer"]
 
 
 def update_session(output):

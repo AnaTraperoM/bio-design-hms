@@ -14,12 +14,6 @@ check_if_already_logged_in()
 add_investigator_formatting()
 initialize_investigator_session()
 
-# llm = create_llm()
-# observation_chat_chain = get_prompt() | llm | StrOutputParser()
-
-# st.session.state.messages = []
-# st.session_state.messages.append({"role": "system", "content": SYSTEM_PROMPT})
-
 # Handle new input
 if user_input := st.chat_input("What would you like to ask me?"):
 
@@ -29,11 +23,6 @@ if user_input := st.chat_input("What would you like to ask me?"):
 
     st.session_state.messages.append(HumanMessage(content=user_input))
     st.session_state.messages.append(AIMessage(content=ai_response))
-
-
-    # # with get_openai_callback() as cb:
-    # new_output = observation_chat_chain.invoke(fetch_real_time_gsheets_data(prompt),)
-    # # new_output = observation_chat_chain.invoke(fetch_similar_data(prompt),)
 
     update_session(ai_response)
 
