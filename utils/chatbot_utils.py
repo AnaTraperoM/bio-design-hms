@@ -16,12 +16,12 @@ def fetch_similar_data(prompt):
 
     # Perform similarity search using Pinecone
     updated_observations_db = refresh_db(namespace_to_refresh="observations")
-    semantically_related_observations = updated_observations_db.similarity_search(prompt, k=10)
+    semantically_related_observations = updated_observations_db.similarity_search(prompt, k=3)
 
     cases_from_observations = cases_related_to_observations(semantically_related_observations)
 
     updated_cases_db = refresh_db(namespace_to_refresh="cases")
-    semantically_related_cases = updated_cases_db.similarity_search(prompt, k=4)
+    semantically_related_cases = updated_cases_db.similarity_search(prompt, k=3)
 
     observations_from_cases = observations_related_to_cases(semantically_related_cases)
 
