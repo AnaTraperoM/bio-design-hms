@@ -15,6 +15,9 @@ def initialize_investigator_session():
 
     # Display previous messages
     for message in st.session_state.messages:
-        if not isinstance(message, SystemMessage):
-            with st.chat_message(message.role):
+        if isinstance(message, HumanMessage):
+            with st.chat_message("user"):
+                st.markdown(message.content)
+        elif isinstance(message, AIMessage):
+            with st.chat_message("assistant"):
                 st.markdown(message.content)
