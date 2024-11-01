@@ -18,8 +18,8 @@ initialize_investigator_session()
 llm = create_llm()
 observation_chat_chain = get_prompt() | llm | StrOutputParser()
 
-st.session.state.messages = []
-st.session_state.messages.append({"role": "system", "content": SYSTEM_PROMPT})
+# st.session.state.messages = []
+# st.session_state.messages.append({"role": "system", "content": SYSTEM_PROMPT})
 
 # Handle new input
 if prompt := st.chat_input("What would you like to ask me?"):
