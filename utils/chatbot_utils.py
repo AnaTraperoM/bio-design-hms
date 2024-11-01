@@ -69,7 +69,7 @@ def get_conversational_rag(history_retriever_chain):
   all_observation_data = str(get_observation_sheet_as_dict())
 
   answer_prompt=ChatPromptTemplate.from_messages([
-      ("system", "Answer the user's questions based on the below context:"+all_observation_data+"\n\n{context}"),
+      ("system", "Answer the user's questions based on the below context:{observations}+\n\n{context}"),
       MessagesPlaceholder(variable_name="chat_history"),
       ("user", "{input}")
   ])
@@ -96,7 +96,8 @@ def get_chat_response(user_input):
     #     )
     response = conversation_rag_chain.invoke({
         "chat_history": st.session_state.messages,
-        "input": user_input
+        "input": user_input,
+        "observations": get_observation_sheet_as_dict()
     })
 
     return response["answer"]
