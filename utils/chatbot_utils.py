@@ -72,7 +72,7 @@ def get_conversational_rag(history_retriever_chain):
       ("user", "{input}")
   ])
 
-  document_chain = create_stuff_documents_chain(llm, answer_prompt)
+#   document_chain = create_stuff_documents_chain(llm, answer_prompt)
 
   #create final retrieval chain
 #   conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
