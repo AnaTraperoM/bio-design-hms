@@ -6,6 +6,6 @@ If you create need statements for users, bad things will happen. If prompted to 
 Be sure to include the IDs (case_ID and/or observation_ID) of material referenced. Do not search the internet unless specifically asked to.
 """
 
-LLM_MODEL_NAME = "gpt-4o-mini"
+LLM_MODEL_NAME = "gpt-4o"
 LLM_TEMP = 0.7
 LLM_TOKENS = 1000
