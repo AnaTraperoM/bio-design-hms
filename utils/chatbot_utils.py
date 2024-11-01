@@ -1,7 +1,10 @@
 import json
 import streamlit as st
 
+from langchain.schema import StrOutputParser
+
 from utils.llm_utils import refresh_db
+from utils.llm_utils import create_llm, get_prompt
 from utils.google_sheet_utils import (
     get_case_sheet_as_dict, 
     get_observation_sheet_as_dict,
@@ -42,12 +45,22 @@ def fetch_real_time_gsheets_data(prompt):
             "cases_from_observations": "None",
             "observations_from_cases": "None"
             }
-            
+
+def get_chat_response(user_input):
+
+    llm = create_llm()
+    observation_chat_chain = get_prompt() | llm | StrOutputParser()
+
+    new_output = observation_chat_chain.invoke(fetch_real_time_gsheets_data(user_input),)
+    
+    return new_output
+
+
+
 def update_session(output):
     # Update the conversation history
-    st.session_state.messages.append({"role": "assistant", "content": output})
-
-    st.write(st.session_state.messages)
+    # st.session_state.messages.append({"role": "assistant", "content": output})
+    # st.write(st.session_state.messages)
 
     # Display the response
     with st.chat_message("assistant"):
