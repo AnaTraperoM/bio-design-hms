@@ -100,6 +100,7 @@ def get_chat_response(user_input):
     })
 
     # return response["answer"]
+    st.write(response)
     return response
 
 
