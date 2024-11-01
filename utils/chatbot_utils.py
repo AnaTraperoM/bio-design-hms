@@ -67,8 +67,8 @@ def get_conversational_rag(history_retriever_chain):
   llm=create_llm()
 
   answer_prompt=ChatPromptTemplate.from_messages([
-      ("system", "Answer the user's questions based on the following observations:{observations}"),
       MessagesPlaceholder(variable_name="chat_history"),
+      ("assistant", "I have found the following observations :{observations} and cases: {cases} relevant to the conversation"),
       ("user", "{input}")
   ])
 
@@ -96,11 +96,11 @@ def get_chat_response(user_input):
     response = conversation_rag_chain.invoke({
         "chat_history": st.session_state.messages,
         "input": user_input,
-        "observations": get_observation_sheet_as_dict()
+        "observations": get_observation_sheet_as_dict(),
+        "cases": get_case_sheet_as_dict()
     })
 
     # return response["answer"]
-    st.write(response)
     return response
 
 
