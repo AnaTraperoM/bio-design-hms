@@ -99,7 +99,8 @@ def get_chat_response(user_input):
         "observations": get_observation_sheet_as_dict()
     })
 
-    return response["answer"]
+    # return response["answer"]
+    return response
 
 
 def update_session(output):
