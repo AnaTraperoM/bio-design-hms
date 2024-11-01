@@ -46,6 +46,11 @@ def get_case_sheet_as_dict():
     data = case_sheet.get_all_records()
     return data
 
+def get_observation_sheet_as_dict():
+    observation_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Observation Log")
+    data = observation_sheet.get_all_records()
+    return data
+
 def get_case_descriptions_from_case_ids(case_ids):
     data = get_case_sheet_as_dict()
 
@@ -54,3 +59,24 @@ def get_case_descriptions_from_case_ids(case_ids):
         for case in data
         if case['Case ID'] in case_ids
     }
+
+def get_observation_descriptions_from_observation_ids(observation_ids):
+    data = get_observation_sheet_as_dict()
+
+    return {
+        observation['Observation ID']: observation['Observation Description']
+        for observation in data
+        if observation['Observation ID'] in observation_ids
+    }
+
+def cases_related_to_observations(list_of_observations_pinecone):
+    case_ids = []
+    for observation in list_of_observations_pinecone:
+        case_ids.append(observation.metadata['Case ID'])
+    return get_case_descriptions_from_case_ids(case_ids)
+
+def observations_related_to_cases(list_of_cases_pinecone):
+    observation_ids = []
+    for case in list_of_cases_pinecone:
+        observation_ids.append(case.metadata['Observation ID'])
+    return get_observation_descriptions_from_observation_ids(observation_ids)

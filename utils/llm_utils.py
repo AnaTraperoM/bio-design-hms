@@ -31,9 +31,12 @@ def get_prompt():
     question_prompt = PromptTemplate.from_template(
         PROMPT +  """
         Question: {question}
-        Set of Observations: {related_observations}
-        Relevant Cases linked to Observations:{related_cases}
-        Semantically Relevant cases: {related_cases_similarity}
+        Semantically Relevant Observations: {semantically_related_observations}
+        Relevant Cases linked to above Observations: {cases_from_observations}
+
+        Semantically Relevant cases: {semantically_related_cases}
+        Relevant Observations linked to above Cases: {observations_from_cases}
+        
         Final Answer:
         """
     )

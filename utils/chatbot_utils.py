@@ -2,7 +2,12 @@ import json
 import streamlit as st
 
 from utils.llm_utils import refresh_db
-from utils.google_sheet_utils import get_case_descriptions_from_case_ids, get_case_sheet_as_dict
+from utils.google_sheet_utils import (
+    get_case_sheet_as_dict, 
+    get_observation_sheet_as_dict,
+    cases_related_to_observations,
+    observations_related_to_cases
+)
 
 def fetch_similar_data(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -11,23 +16,20 @@ def fetch_similar_data(prompt):
 
     # Perform similarity search using Pinecone
     updated_observations_db = refresh_db(namespace_to_refresh="observations")
-    related_observations = updated_observations_db.similarity_search(prompt, k=10)
+    semantically_related_observations = updated_observations_db.similarity_search(prompt, k=10)
 
-    # get case ids from metadata of related observations
-    case_ids = []
-    for observation in related_observations:
-        if 'case_id' in observation.metadata:
-            case_ids.append(observation.metadata['case_id'])
-
-    related_cases = get_case_descriptions_from_case_ids(case_ids)
+    cases_from_observations = cases_related_to_observations(semantically_related_observations)
 
     updated_cases_db = refresh_db(namespace_to_refresh="cases")
-    related_cases_similarity = updated_cases_db.similarity_search(prompt, k=4)
+    semantically_related_cases = updated_cases_db.similarity_search(prompt, k=4)
+
+    observations_from_cases = observations_related_to_cases(semantically_related_cases)
 
     return {"question": prompt, 
-            "related_observations": related_observations,
-            "related_cases": related_cases,
-            "related_cases_similarity": related_cases_similarity}
+            "semantically_related_observations": semantically_related_observations,
+            "cases_from_observations": cases_from_observations,
+            "semantically_related_cases": semantically_related_cases,
+            "observations_from_cases": observations_from_cases}
 
 def fetch_real_time_gsheets_data(prompt):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -35,13 +37,17 @@ def fetch_real_time_gsheets_data(prompt):
         st.markdown(prompt)
 
     return {"question": prompt, 
-            "related_observations": "None",
-            "related_cases": json.dumps(get_case_sheet_as_dict()),
-            "related_cases_similarity": "None"}
-
+            "semantically_related_observations": json.dumps(get_observation_sheet_as_dict()),
+            "semantically_related_cases": json.dumps(get_case_sheet_as_dict()),
+            "cases_from_observations": "None",
+            "observations_from_cases": "None"
+            }
+            
 def update_session(output):
     # Update the conversation history
     st.session_state.messages.append({"role": "assistant", "content": output})
+
+    # st.write(st.session_state.messages)
 
     # Display the response
     with st.chat_message("assistant"):

@@ -18,7 +18,7 @@ llm = create_llm()
 observation_chat_chain = get_prompt() | llm | StrOutputParser()
 
 # Handle new input
-if prompt := st.chat_input("What would you like to ask?"):
+if prompt := st.chat_input("What would you like to ask me?"):
 
     with get_openai_callback() as cb:
         new_output = observation_chat_chain.invoke(fetch_real_time_gsheets_data(prompt),)
