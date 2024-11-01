@@ -3,7 +3,8 @@ import streamlit as st
 
 from langchain.schema import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains import create_retrieval_chain, create_history_aware_retriever, create_stuff_documents_chain
+from langchain.chains import create_retrieval_chain, create_history_aware_retriever
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import MessagesPlaceholder
 
 from utils.llm_utils import refresh_db
