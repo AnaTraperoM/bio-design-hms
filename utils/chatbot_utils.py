@@ -66,7 +66,7 @@ def get_retreiver_chain(vector_store):
 def get_conversational_rag(history_retriever_chain):
   llm=create_llm()
 
-  all_observation_data = get_observation_sheet_as_dict()
+  all_observation_data = str(get_observation_sheet_as_dict())
 
   answer_prompt=ChatPromptTemplate.from_messages([
       ("system", "Answer the user's questions based on the below context:"+all_observation_data+"\n\n{context}"),
