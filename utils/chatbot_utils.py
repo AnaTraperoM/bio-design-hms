@@ -47,7 +47,7 @@ def update_session(output):
     # Update the conversation history
     st.session_state.messages.append({"role": "assistant", "content": output})
 
-    # st.write(st.session_state.messages)
+    st.write(st.session_state.messages)
 
     # Display the response
     with st.chat_message("assistant"):
