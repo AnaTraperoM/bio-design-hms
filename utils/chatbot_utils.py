@@ -6,7 +6,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain, create_history_aware_retriever
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import MessagesPlaceholder
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
+from utils.chatbot_parameters import SYSTEM_PROMPT
 from utils.llm_utils import refresh_db
 from utils.llm_utils import create_llm, get_prompt
 from utils.google_sheet_utils import (
@@ -49,58 +51,63 @@ def fetch_real_time_gsheets_data(user_input):
             }
 
 
-def get_retreiver_chain(vector_store):
+# def get_retreiver_chain(vector_store):
   
-  llm=create_llm()
-  retriever = vector_store.as_retriever()
-  prompt = ChatPromptTemplate.from_messages([
-      MessagesPlaceholder(variable_name="chat_history"),
-      ("user", "{input}"),
-      ("user", "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation")
-  ])
-  history_retriver_chain = create_history_aware_retriever(llm, retriever, prompt)
+#   llm=create_llm()
+#   retriever = vector_store.as_retriever()
+#   prompt = ChatPromptTemplate.from_messages([
+#       MessagesPlaceholder(variable_name="chat_history"),
+#       ("user", "{input}"),
+#       ("user", "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation")
+#   ])
+#   history_retriver_chain = create_history_aware_retriever(llm, retriever, prompt)
   
-  return history_retriver_chain
+#   return history_retriver_chain
 
 
-def get_conversational_rag(history_retriever_chain):
-  llm=create_llm()
+# def get_conversational_rag(history_retriever_chain):
+#   llm=create_llm()
 
-  answer_prompt=ChatPromptTemplate.from_messages([
-      MessagesPlaceholder(variable_name="chat_history"),
-      ("assistant", "I have found the following observations :{observations} and cases: {cases} relevant to the conversation"),
-      ("user", "{input}")
-  ])
+#   answer_prompt=ChatPromptTemplate.from_messages([
+#       MessagesPlaceholder(variable_name="chat_history"),
+#       ("assistant", "I have found the following observations :{observations} and cases: {cases} relevant to the conversation"),
+#       ("user", "{input}")
+#   ])
 
-#   document_chain = create_stuff_documents_chain(llm, answer_prompt)
+# #   document_chain = create_stuff_documents_chain(llm, answer_prompt)
 
-  #create final retrieval chain
-#   conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
-  conversational_retrieval_chain = answer_prompt | llm | StrOutputParser()
+#   #create final retrieval chain
+# #   conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
+#   conversational_retrieval_chain = answer_prompt | llm | StrOutputParser()
 
-  return conversational_retrieval_chain
+#   return conversational_retrieval_chain
 
+def create_chatbot_chain():
+    llm=create_llm()
+
+    answer_prompt=ChatPromptTemplate.from_messages([
+        SystemMessage(content=SYSTEM_PROMPT),
+        ("assistant", "I have found the following observations: {observations} and cases: {cases} relevant"),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("user", "{input}")
+    ])
+
+    chatbot_chain = answer_prompt | llm | StrOutputParser()
+
+    return chatbot_chain
 
 def get_chat_response(user_input):
 
-    llm = create_llm()
+    if 'chatbot_chain' not in st.session_state:
+        st.session_state.chatbot = create_chatbot_chain()
 
-    updated_observations_db = refresh_db(namespace_to_refresh="observations")
-
-    observations_retriever_chain = get_retreiver_chain(updated_observations_db)
-    conversation_rag_chain = get_conversational_rag(observations_retriever_chain)
-
-    # full_prompt = ChatPromptTemplate.from_messages(
-    #     st.session_state.messages
-    #     )
-    response = conversation_rag_chain.invoke({
+    response = st.session_state.chatbot.invoke({
         "chat_history": st.session_state.messages,
         "input": user_input,
         "observations": get_observation_sheet_as_dict(),
         "cases": get_case_sheet_as_dict()
     })
 
-    # return response["answer"]
     return response
 
 
