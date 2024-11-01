@@ -101,14 +101,12 @@ def get_chat_response(user_input):
     if 'chatbot_chain' not in st.session_state:
         st.session_state.chatbot = create_chatbot_chain()
 
-    response = st.session_state.chatbot.invoke({
+    return st.session_state.chatbot.stream({
         "chat_history": st.session_state.messages,
         "input": user_input,
         "observations": get_observation_sheet_as_dict(),
         "cases": get_case_sheet_as_dict()
     })
-
-    return response
 
 
 def update_session(output):
@@ -116,9 +114,9 @@ def update_session(output):
     # st.session_state.messages.append({"role": "assistant", "content": output})
     # st.write(st.session_state.messages)
 
-    # Display the response
-    with st.chat_message("assistant"):
-        st.markdown(output)
+    # # Display the response
+    # with st.chat_message("assistant"):
+    #     st.markdown(output)
 
     # Store chat in the current sheet
     st.session_state.chat_sheet.append_row([st.session_state.messages[-2].content, st.session_state.messages[-1].content])
