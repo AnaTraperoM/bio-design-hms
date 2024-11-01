@@ -66,10 +66,8 @@ def get_retreiver_chain(vector_store):
 def get_conversational_rag(history_retriever_chain):
   llm=create_llm()
 
-  all_observation_data = str(get_observation_sheet_as_dict())
-
   answer_prompt=ChatPromptTemplate.from_messages([
-      ("system", "Answer the user's questions based on the following observations:{observations}+\n\n{context}"),
+      ("system", "Answer the user's questions based on the following observations:{observations}"),
       MessagesPlaceholder(variable_name="chat_history"),
       ("user", "{input}")
   ])
@@ -77,7 +75,8 @@ def get_conversational_rag(history_retriever_chain):
   document_chain = create_stuff_documents_chain(llm, answer_prompt)
 
   #create final retrieval chain
-  conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
+#   conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
+  conversational_retrieval_chain = answer_prompt | llm | StrOutputParser()
 
   return conversational_retrieval_chain
 
