@@ -35,7 +35,7 @@ if user_input := st.chat_input("What would you like to ask me?"):
     # new_output = observation_chat_chain.invoke(fetch_real_time_gsheets_data(prompt),)
     # # new_output = observation_chat_chain.invoke(fetch_similar_data(prompt),)
 
-    update_session(new_output)
+    update_session(ai_response)
 
 st.markdown("---")
 
