@@ -97,12 +97,14 @@ def sync_with_pinecone():
     # Create a Pinecone vector store
     db = PineconeVectorStore(
         index_name=st.secrets["pinecone-keys"]["index_to_connect"],
-        namespace="observations",
+        namespace="temp",
         embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
 
     st.write("Syncing data with Pinecone...")
+
+    db.add_texts(["Testing Observation"], medatadas=[{"Observation ID": "Testing Observation"}], ids=["Testing Observation"])
 
     st.write(db._index.list())
     st.write("Done syncing data with Pinecone")
