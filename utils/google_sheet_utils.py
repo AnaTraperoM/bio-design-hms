@@ -110,10 +110,11 @@ def sync_with_pinecone():
     st.write(db_ids)
     st.write(type(db_ids))
 
-    observations = db._index.fetch(ids=db_ids, namespace='temp')
+    observations_db = db._index.fetch(ids=db_ids, namespace='temp')
 
+    st.write(observations.keys())
 
-    st.write(observations)
+    st.write([o for o in observations_db])
     st.write("Done syncing data with Pinecone")
 
 
