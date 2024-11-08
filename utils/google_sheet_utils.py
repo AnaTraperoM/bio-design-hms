@@ -89,10 +89,8 @@ def observations_related_to_cases(list_of_cases_pinecone):
 def sync_with_pinecone():
     """Sync the Google Sheet data with Pinecone"""
     # Get the data from the Google Sheets
-    case_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Case Log")
-    observation_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Observation Log")
-    case_data = case_sheet.get_all_records()
-    observation_data = observation_sheet.get_all_records()
+    cases = get_case_sheet_as_dict()
+    observations = get_observation_sheet_as_dict()
 
     # Create a Pinecone vector store
     db = PineconeVectorStore(
@@ -108,10 +106,13 @@ def sync_with_pinecone():
     # db.add_texts(["Testing Observation"])
 
     db_ids = db._index.list(namespace='temp')
+    
+    st.write(db_ids)
+    st.write(type(db_ids))
 
-    observations = db._index.fetch(db_ids, namespace='temp')
+    observations = db._index.fetch(ids=db_ids, namespace='temp')
 
-    st.write(db._index.list(namespace='temp'))
+
     st.write(observations)
     st.write("Done syncing data with Pinecone")
 
