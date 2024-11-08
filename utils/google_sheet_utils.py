@@ -109,7 +109,7 @@ def sync_with_pinecone():
 
     db_ids = db._index.list(namespace='temp')
 
-    observations = db._index.fetch(db_ids)
+    observations = db._index.fetch(db_ids, namespace='temp')
 
     st.write(db._index.list(namespace='temp'))
     st.write(observations)
