@@ -105,6 +105,7 @@ def sync_with_pinecone():
     st.write("Syncing data with Pinecone...")
 
     st.write(db._index.list())
+    st.write("Done syncing data with Pinecone")
 
 
     return db
