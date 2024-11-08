@@ -97,7 +97,7 @@ def sync_with_pinecone():
     # Create a Pinecone vector store
     db = PineconeVectorStore(
         index_name=st.secrets["pinecone-keys"]["index_to_connect"],
-        namespace="temp",
+        namespace="cases_observations",
         embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
