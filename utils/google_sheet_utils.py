@@ -3,6 +3,10 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
 
+from langchain_pinecone import PineconeVectorStore
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
+
 # Access the credentials from Streamlit secrets
 creds_dict = {
     "type" : st.secrets["gwf_service_account"]["type"],
@@ -80,3 +84,27 @@ def observations_related_to_cases(list_of_cases_pinecone):
     for case in list_of_cases_pinecone:
         observation_ids.append(case.metadata['Observation ID'])
     return get_observation_descriptions_from_observation_ids(observation_ids)
+
+
+def sync_with_pinecone():
+    """Sync the Google Sheet data with Pinecone"""
+    # Get the data from the Google Sheets
+    case_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Case Log")
+    observation_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Observation Log")
+    case_data = case_sheet.get_all_records()
+    observation_data = observation_sheet.get_all_records()
+
+    # Create a Pinecone vector store
+    db = PineconeVectorStore(
+        index_name=st.secrets["pinecone-keys"]["index_to_connect"],
+        namespace="temp",
+        embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
+        pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
+    )
+
+    st.write("Syncing data with Pinecone...")
+
+    st.write(db._index.list())
+
+
+    return db
