@@ -105,10 +105,14 @@ def sync_with_pinecone():
     st.write("Syncing data with Pinecone...")
 
     # db.add_texts(["Testing Observation"], medatadas=[{"Observation ID": "Testing Observation"}], ids=["Testing Observation"])
-    db.add_texts(["Testing Observation"])
+    # db.add_texts(["Testing Observation"])
+
+    db_ids = db._index.list(namespace='temp')
+
+    observations = db._index.fetch(db_ids)
 
     st.write(db._index.list(namespace='temp'))
-    st.write(db._index.describe())
+    st.write(observations)
     st.write("Done syncing data with Pinecone")
 
 
