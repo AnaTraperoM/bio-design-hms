@@ -106,7 +106,7 @@ def sync_with_pinecone():
     # db.add_texts(["Testing Observation"])
 
     db_ids = db._index.list(namespace='temp')
-    db_ids_list = db_ids[0]
+    db_ids_list = db_ids
     
     st.write(db_ids_list)
     st.write(type(observations_dict))
