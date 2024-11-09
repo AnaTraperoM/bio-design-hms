@@ -112,15 +112,17 @@ def sync_with_pinecone():
     
     st.write(db_ids_list)
 
-    st.write(observations)
+    # st.write(observations)
 
     # st.write(type(db_ids))
+    object_methods = [method_name for method_name in dir(db._index)
+                  if callable(getattr(object, method_name))]
 
-    observations_db = db._index.fetch(ids=db_ids_list, namespace='temp')
-    observations_db_list = [i for i in observations_db]
+    # observations_db = db._index.fetch(ids=db_ids_list, namespace='temp')
+    # observations_db_list = [i for i in observations_db]
 
 
-    st.write(observations_db_list)
+    st.write(object_methods)
     st.write("Done syncing data with Pinecone")
 
 
