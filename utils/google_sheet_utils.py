@@ -109,7 +109,9 @@ def sync_with_pinecone():
     db_ids_list = [i for i in db_ids]
     
     st.write(db_ids_list)
-    st.write(observations)
+    st.write(type(observations))
+
+    st.write(observations.values())
 
     # st.write(type(db_ids))
 
