@@ -90,6 +90,7 @@ def observations_related_to_cases(list_of_cases_pinecone):
 
 def sync_with_pinecone(namespace='temp'):
     """Sync the Google Sheet data with Pinecone"""
+    start_time = datetime.now()
 
     # cases_iterable = get_case_sheet_as_dict()
     observations_in_sheet = get_observation_sheet_as_dict()
@@ -102,7 +103,6 @@ def sync_with_pinecone(namespace='temp'):
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
 
-    start_time = datetime.now()
 
     observation_ids = [observation['Observation ID'] for observation in observations_in_sheet]
     observation_descriptions = [observation['Observation Description'] for observation in observations_in_sheet]
@@ -114,6 +114,8 @@ def sync_with_pinecone(namespace='temp'):
     time_taken = time_taken.total_seconds()
     time_taken = float("{:.2f}".format(time_taken))
 
-    st.write("Synced data from ", len(observations_added), " observations in ", time_taken, " seconds.")
+    st.write("Time taken to sync data: ", time_taken, " seconds")
+
+    st.write("Synced data from ", len(observations_added), " observations")
 
     return db
