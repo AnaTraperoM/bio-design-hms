@@ -6,6 +6,8 @@ from datetime import datetime
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
+from langchain_core.documents import Document
+
 
 # Access the credentials from Streamlit secrets
 creds_dict = {
@@ -86,44 +88,52 @@ def observations_related_to_cases(list_of_cases_pinecone):
     return get_observation_descriptions_from_observation_ids(observation_ids)
 
 
-def sync_with_pinecone():
+def sync_with_pinecone(namespace='temp'):
     """Sync the Google Sheet data with Pinecone"""
     # Get the data from the Google Sheets
-    cases_iterable = get_case_sheet_as_dict()
-    observations_iterable = get_observation_sheet_as_dict()
+    # cases_iterable = get_case_sheet_as_dict()
+    observations_in_sheet = get_observation_sheet_as_dict()
 
     # Create a Pinecone vector store
     db = PineconeVectorStore(
         index_name=st.secrets["pinecone-keys"]["index_to_connect"],
-        namespace="temp",
+        namespace=namespace,
         embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
 
     st.write("Syncing data with Pinecone...")
 
-    # db.add_texts(["Testing Observation"], medatadas=[{"Observation ID": "Testing Observation"}], ids=["Testing Observation"])
-    # db.add_texts(["Testing Observation"])
+    start_time = datetime.now()
 
-    db_ids = db._index.list(namespace='temp')
-    db_ids_list = db_ids
+    pinecone_ids = list(db._index.list(namespace=namespace))[0]
 
-    observations = list(observations_iterable)
+    pinecone_data = db._index.fetch(ids=pinecone_ids, namespace=namespace)
+
+    observation_ids = [observation['Observation ID'] for observation in observations_in_sheet]
+    observation_descriptions = [observation['Observation Description'] for observation in observations_in_sheet]
+    observation_metadatas = [{k: v for k, v in observation.items() if k not in ['Observation ID', 'Observation Description']} for observation in observations_in_sheet]
+
+    observations_added = db.add_texts(observation_descriptions, metadatas=observation_metadatas, ids=observation_ids)
+
+
+    # for observation in observations_in_sheet:
+    #     observation_id = observation['Observation ID']
+    #     observation_description = observation['Observation Description']
+
+    #     # all other metadata as a dict
+    #     metadata = {k: v for k, v in observation.items() if k not in ['Observation ID', 'Observation Description']}
+
+    #     if observation_id not in pinecone_ids:
+    #         db.add_texts([observation_description], metadatas=[metadata], ids=[observation_id])
+
+    #     if observation_id in pinecone_ids:
+    #         existing_observation_description = pinecone_data[observation_id].metadata['text']
+    #         if existing_observation_description != observation_description:
+    #             db.add_texts([observation_description], ids=[observation_id])
     
-    st.write(db_ids_list)
+    st.write("Number of observations added: ", observations_added)
 
-    # st.write(observations)
-
-    # st.write(type(db_ids))
-    object_methods = [method_name for method_name in dir(db._index)
-                  if callable(getattr(object, method_name))]
-
-    # observations_db = db._index.fetch(ids=db_ids_list, namespace='temp')
-    # observations_db_list = [i for i in observations_db]
-
-
-    st.write(object_methods)
-    st.write("Done syncing data with Pinecone")
-
+    st.write("Done syncing data with Pinecone in ", datetime.now() - start_time)
 
     return db
