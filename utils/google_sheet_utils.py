@@ -110,6 +110,10 @@ def sync_with_pinecone(namespace='temp'):
 
     observations_added = db.add_texts(observation_descriptions, metadatas=observation_metadatas, ids=observation_ids)
 
-    st.write("Done syncing data from ", len(observations_added), " observations in ", datetime.now() - start_time, " seconds.")
+    time_taken = datetime.now() - start_time
+    time_taken = time_taken.total_seconds()
+    time_taken = "{:.2f}".format(time_taken)
+
+    st.write("Synced data from ", len(observations_added), " observations in ", time_taken, " seconds.")
 
     return db
