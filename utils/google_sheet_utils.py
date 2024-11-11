@@ -112,7 +112,7 @@ def sync_with_pinecone(namespace='temp'):
 
     time_taken = datetime.now() - start_time
     time_taken = time_taken.total_seconds()
-    time_taken = "{:.2f}".format(time_taken)
+    time_taken = float("{:.2f}".format(time_taken))
 
     st.write("Synced data from ", len(observations_added), " observations in ", time_taken, " seconds.")
 
