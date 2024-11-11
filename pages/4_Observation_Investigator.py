@@ -13,7 +13,6 @@ from utils.chatbot_parameters import SYSTEM_PROMPT
 check_if_already_logged_in()
 add_investigator_formatting()
 initialize_investigator_session()
-sync_with_pinecone()
 
 # Handle new input
 if user_input := st.chat_input("What would you like to ask ?"):

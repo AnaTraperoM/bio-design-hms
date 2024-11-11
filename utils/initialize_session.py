@@ -2,6 +2,8 @@ import streamlit as st
 from utils.google_sheet_utils import create_new_chat_sheet
 from utils.chatbot_parameters import SYSTEM_PROMPT
 
+from utils.google_sheet_utils import sync_with_pinecone
+
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 def initialize_investigator_session():
@@ -11,6 +13,7 @@ def initialize_investigator_session():
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
+        sync_with_pinecone()
 
     # Display previous messages
     for message in st.session_state.messages:

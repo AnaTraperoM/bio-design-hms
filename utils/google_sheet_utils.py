@@ -90,7 +90,7 @@ def observations_related_to_cases(list_of_cases_pinecone):
 
 def sync_with_pinecone(namespace='temp'):
     """Sync the Google Sheet data with Pinecone"""
-    # Get the data from the Google Sheets
+
     # cases_iterable = get_case_sheet_as_dict()
     observations_in_sheet = get_observation_sheet_as_dict()
 
@@ -102,13 +102,7 @@ def sync_with_pinecone(namespace='temp'):
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
 
-    st.write("Syncing data with Pinecone...")
-
     start_time = datetime.now()
-
-    # pinecone_ids = list(db._index.list(namespace=namespace))[0]
-
-    # pinecone_data = db._index.fetch(ids=pinecone_ids, namespace=namespace)
 
     observation_ids = [observation['Observation ID'] for observation in observations_in_sheet]
     observation_descriptions = [observation['Observation Description'] for observation in observations_in_sheet]
@@ -116,24 +110,6 @@ def sync_with_pinecone(namespace='temp'):
 
     observations_added = db.add_texts(observation_descriptions, metadatas=observation_metadatas, ids=observation_ids)
 
-
-    # for observation in observations_in_sheet:
-    #     observation_id = observation['Observation ID']
-    #     observation_description = observation['Observation Description']
-
-    #     # all other metadata as a dict
-    #     metadata = {k: v for k, v in observation.items() if k not in ['Observation ID', 'Observation Description']}
-
-    #     if observation_id not in pinecone_ids:
-    #         db.add_texts([observation_description], metadatas=[metadata], ids=[observation_id])
-
-    #     if observation_id in pinecone_ids:
-    #         existing_observation_description = pinecone_data[observation_id].metadata['text']
-    #         if existing_observation_description != observation_description:
-    #             db.add_texts([observation_description], ids=[observation_id])
-
-    st.write("Number of observations added: ", len(observations_added))
-
-    st.write("Done syncing data with Pinecone in ", datetime.now() - start_time)
+    st.write("Done syncing data from ", len(observations_added), " observations in ", datetime.now() - start_time, " seconds.")
 
     return db
