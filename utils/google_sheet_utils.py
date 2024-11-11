@@ -106,9 +106,9 @@ def sync_with_pinecone(namespace='temp'):
 
     start_time = datetime.now()
 
-    pinecone_ids = list(db._index.list(namespace=namespace))[0]
+    # pinecone_ids = list(db._index.list(namespace=namespace))[0]
 
-    pinecone_data = db._index.fetch(ids=pinecone_ids, namespace=namespace)
+    # pinecone_data = db._index.fetch(ids=pinecone_ids, namespace=namespace)
 
     observation_ids = [observation['Observation ID'] for observation in observations_in_sheet]
     observation_descriptions = [observation['Observation Description'] for observation in observations_in_sheet]
@@ -131,8 +131,8 @@ def sync_with_pinecone(namespace='temp'):
     #         existing_observation_description = pinecone_data[observation_id].metadata['text']
     #         if existing_observation_description != observation_description:
     #             db.add_texts([observation_description], ids=[observation_id])
-    
-    st.write("Number of observations added: ", observations_added)
+
+    st.write("Number of observations added: ", len(observations_added))
 
     st.write("Done syncing data with Pinecone in ", datetime.now() - start_time)
 
