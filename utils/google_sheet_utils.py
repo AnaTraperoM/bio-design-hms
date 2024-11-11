@@ -88,34 +88,45 @@ def observations_related_to_cases(list_of_cases_pinecone):
     return get_observation_descriptions_from_observation_ids(observation_ids)
 
 
-def sync_with_pinecone(namespace='temp'):
+def sync_with_pinecone(observations_namespace='observations_temp', cases_namespace='cases_temp'):
     """Sync the Google Sheet data with Pinecone"""
-    start_time = datetime.now()
+    # start_time = datetime.now()
 
-    # cases_iterable = get_case_sheet_as_dict()
     observations_in_sheet = get_observation_sheet_as_dict()
 
     # Create a Pinecone vector store
-    db = PineconeVectorStore(
+    observations_db = PineconeVectorStore(
         index_name=st.secrets["pinecone-keys"]["index_to_connect"],
-        namespace=namespace,
+        namespace=observations_namespace,
         embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
-
 
     observation_ids = [observation['Observation ID'] for observation in observations_in_sheet]
     observation_descriptions = [observation['Observation Description'] for observation in observations_in_sheet]
     observation_metadatas = [{k: v for k, v in observation.items() if k not in ['Observation ID', 'Observation Description']} for observation in observations_in_sheet]
 
-    observations_added = db.add_texts(observation_descriptions, metadatas=observation_metadatas, ids=observation_ids)
+    observations_added = observations_db.add_texts(observation_descriptions, metadatas=observation_metadatas, ids=observation_ids)
 
-    time_taken = datetime.now() - start_time
-    time_taken = time_taken.total_seconds()
-    time_taken = float("{:.2f}".format(time_taken))
+    # cases_in_sheet = get_case_sheet_as_dict()
 
-    st.write("Time taken to sync data: ", time_taken, " seconds")
+    # cases_db = PineconeVectorStore(
+    #     index_name=st.secrets["pinecone-keys"]["index_to_connect"],
+    #     namespace=cases_namespace,
+    #     embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
+    #     pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
+    # )
+
+    # case_ids = [case['Case ID'] for case in cases_in_sheet]
+    # case_descriptions = [case['Case Description'] for case in cases_in_sheet]
+    # case_metadatas = [{k: v for k, v in case.items() if k not in ['Case ID', 'Case Description']} for case in cases_in_sheet]
+
+    # cases_added = cases_db.add_texts(case_descriptions, metadatas=case_metadatas, ids=case_ids)
+
+    # time_taken = datetime.now() - start_time
+    # time_taken = time_taken.total_seconds()
+    # time_taken = float("{:.2f}".format(time_taken))
+
+    # st.write("Time taken to sync data: ", time_taken, " seconds")
 
     st.write("Synced data from ", len(observations_added), " observations")
-
-    return db
