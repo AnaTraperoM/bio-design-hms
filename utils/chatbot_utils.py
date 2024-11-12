@@ -87,7 +87,7 @@ def fetch_real_time_gsheets_data(user_input):
 def create_chatbot_chain():
     llm=create_llm()
 
-    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever()
+    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever(search_kwargs={'score_threshold': 0.5, 'k': 20})
 
     doc_prompt = PromptTemplate.from_template(
     """Observation ID: {Observation ID}
@@ -141,9 +141,9 @@ def get_chat_response(user_input):
 # def get_chat_response(user_input):
 
 #     if 'chatbot_chain' not in st.session_state:
-#         st.session_state.chatbot = create_chatbot_chain()
+#         st.session_state.chatbot_chain = create_chatbot_chain()
 
-#     return st.session_state.chatbot.stream({
+#     return st.session_state.chatbot_chain.stream({
 #         "chat_history": st.session_state.messages,
 #         "input": user_input,
 #         "observations": get_observation_sheet_as_dict(),
