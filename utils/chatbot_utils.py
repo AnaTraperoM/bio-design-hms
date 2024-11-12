@@ -100,7 +100,9 @@ def create_chatbot_chain():
     """Observation ID: {Observation ID}\n
 Description: {page_content}\n
 Observer: {Observer}\n
-Date: {Date}"""
+Date: {Date}\n
+Tags: {Tags}\n
+Notes: {Notes}"""
     )
 
     observation_retriever_tool = create_retriever_tool(
