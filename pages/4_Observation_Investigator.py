@@ -23,12 +23,12 @@ if user_input := st.chat_input("What would you like to ask ?"):
 
     # create the chat messages for the llm
     if user_input is not None and user_input.strip()!="":
-        # ai_response = st.write_stream(get_chat_response(user_input))
-        ai_response = get_chat_response(user_input)
+        ai_response = st.write_stream(get_chat_response(user_input))
+        # ai_response = get_chat_response(user_input)
 
     # show the ai response
-    with st.chat_message("assistant"):
-        st.markdown(ai_response)
+    # with st.chat_message("assistant"):
+    #     st.markdown(ai_response)
 
     st.session_state.messages.append(HumanMessage(content=user_input))
     st.session_state.messages.append(AIMessage(content=ai_response))

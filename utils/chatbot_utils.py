@@ -84,76 +84,76 @@ def fetch_real_time_gsheets_data(user_input):
 
 #   return conversational_retrieval_chain
 
-def create_chatbot_chain():
-    llm=create_llm()
-
-    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever()
-
-    doc_prompt = PromptTemplate.from_template(
-    """Observation ID: {Observation ID}
-Description: {page_content}
-Observer: {Observer}"""
-    )
-
-    tool = create_retriever_tool(
-        retriever,
-        name="observations_retriever",
-        description="Searches and returns clinical observations.",
-        document_prompt=doc_prompt,
-
-    )
-    tools = [tool]
-
-    st.session_state.memory_saver = MemorySaver()
-
-    agent_executor = create_react_agent(llm, tools, checkpointer=st.session_state.memory_saver, state_modifier=SystemMessage(content=SYSTEM_PROMPT))
-
-    return agent_executor
-
-
-def get_chat_response(user_input):
-    if 'chatbot_chain' not in st.session_state:
-            st.session_state.chatbot = create_chatbot_chain()
-            st.session_state.chatbot_config = {"configurable": {"thread_id": "abc123"}}
-
-    final_message = ''
-    for s in st.session_state.chatbot.stream(
-            {"messages": [HumanMessage(content=user_input)]},
-            stream_mode="values",
-            config=st.session_state.chatbot_config
-        ):
-        message = s["messages"][-1]
-        final_message = message.content
-
-    return final_message    
-
-
-
 # def create_chatbot_chain():
 #     llm=create_llm()
 
-#     answer_prompt=ChatPromptTemplate.from_messages([
-#         SystemMessage(content=SYSTEM_PROMPT),
-#         ("assistant", "I have found the following observations: {observations} and cases: {cases} relevant"),
-#         MessagesPlaceholder(variable_name="chat_history"),
-#         ("user", "{input}")
-#     ])
+#     retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever()
 
-#     chatbot_chain = answer_prompt | llm | StrOutputParser()
+#     doc_prompt = PromptTemplate.from_template(
+#     """Observation ID: {Observation ID}
+# Description: {page_content}
+# Observer: {Observer}"""
+#     )
 
-#     return chatbot_chain
+#     tool = create_retriever_tool(
+#         retriever,
+#         name="observations_retriever",
+#         description="Searches and returns clinical observations.",
+#         document_prompt=doc_prompt,
+
+#     )
+#     tools = [tool]
+
+#     memory_saver = MemorySaver()
+
+#     agent_executor = create_react_agent(llm, tools, checkpointer=memory_saver, state_modifier=SystemMessage(content=SYSTEM_PROMPT))
+
+#     return agent_executor
+
 
 # def get_chat_response(user_input):
-
 #     if 'chatbot_chain' not in st.session_state:
-#         st.session_state.chatbot = create_chatbot_chain()
+#             st.session_state.chatbot = create_chatbot_chain()
+#             st.session_state.chatbot_config = {"configurable": {"thread_id": "abc123"}}
 
-#     return st.session_state.chatbot.stream({
-#         "chat_history": st.session_state.messages,
-#         "input": user_input,
-#         "observations": get_observation_sheet_as_dict(),
-#         "cases": get_case_sheet_as_dict()
-#     })
+#     final_message = ''
+#     for s in st.session_state.chatbot.stream(
+#             {"messages": [HumanMessage(content=user_input)]},
+#             stream_mode="values",
+#             config=st.session_state.chatbot_config
+#         ):
+#         message = s["messages"][-1]
+#         final_message = message.content
+
+#     return final_message    
+
+
+
+def create_chatbot_chain():
+    llm=create_llm()
+
+    answer_prompt=ChatPromptTemplate.from_messages([
+        SystemMessage(content=SYSTEM_PROMPT),
+        ("assistant", "I have found the following observations: {observations} and cases: {cases} relevant"),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("user", "{input}")
+    ])
+
+    chatbot_chain = answer_prompt | llm | StrOutputParser()
+
+    return chatbot_chain
+
+def get_chat_response(user_input):
+
+    if 'chatbot_chain' not in st.session_state:
+        st.session_state.chatbot = create_chatbot_chain()
+
+    return st.session_state.chatbot.stream({
+        "chat_history": st.session_state.messages,
+        "input": user_input,
+        "observations": get_observation_sheet_as_dict(),
+        "cases": get_case_sheet_as_dict()
+    })
 
 
 def update_session(output):
