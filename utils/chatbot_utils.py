@@ -95,12 +95,12 @@ Statement: {page_content}
     search = GoogleSerperAPIWrapper()
 
     search_tool = GoogleSerperAPIWrapper(
+        search.run,
         name="Search for answers on internet",
-        func=search.run,
         description="useful for when you need to ask with search",
     )
 
-    tools = [observation_retriever_tool, need_statement_retriever_tool]
+    tools = [observation_retriever_tool, need_statement_retriever_tool, search_tool]
 
     memory_saver = MemorySaver()
 
