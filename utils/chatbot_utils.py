@@ -87,7 +87,7 @@ def fetch_real_time_gsheets_data(user_input):
 def create_chatbot_chain():
     llm=create_llm()
 
-    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever(search_kwargs={'score_threshold': 0.5, 'k': 20})
+    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever(search_kwargs={'k': 20})
 
     doc_prompt = PromptTemplate.from_template(
     """Observation ID: {Observation ID}
@@ -98,7 +98,7 @@ Observer: {Observer}"""
     tool = create_retriever_tool(
         retriever,
         name="observations_retriever",
-        description="Searches and returns clinical observations.",
+        description="Searches and returns clinical observations related to the user query.",
         document_prompt=doc_prompt,
 
     )
