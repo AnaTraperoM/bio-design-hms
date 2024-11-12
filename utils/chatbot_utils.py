@@ -155,7 +155,7 @@ def get_chat_response(user_input):
             stream_mode="values",
             config=st.session_state.chatbot_config
         ):
-        response_message = s['message'][-1]
+        response_message = s['messages'][-1]
         response = response_message.content
 
         st.write(response_message.pretty_print())
