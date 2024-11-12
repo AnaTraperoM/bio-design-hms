@@ -91,16 +91,16 @@ Statement: {page_content}
         document_prompt=need_statement_doc_prompt,
     )
 
-    os.environ["SERPER_API_KEY"] = "1f5fbd41f519e591303f78cb58caf9794ba43dc7"
-    search = GoogleSerperAPIWrapper()
+    # os.environ["SERPER_API_KEY"] = "1f5fbd41f519e591303f78cb58caf9794ba43dc7"
+    # search = GoogleSerperAPIWrapper()
 
-    search_tool = GoogleSerperAPIWrapper(
-        search.run,
-        name="Search for answers on internet",
-        description="useful for when you need to ask with search",
-    )
+    # search_tool = GoogleSerperAPIWrapper(
+    #     search.run,
+    #     name="Search for answers on internet",
+    #     description="useful for when you need to ask with search",
+    # )
 
-    tools = [observation_retriever_tool, need_statement_retriever_tool, search_tool]
+    tools = [observation_retriever_tool, need_statement_retriever_tool]
 
     memory_saver = MemorySaver()
 
