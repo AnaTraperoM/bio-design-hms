@@ -104,9 +104,9 @@ Observer: {Observer}"""
     )
     tools = [tool]
 
-    memory_saver = MemorySaver()
+    st.session_state.memory_saver = MemorySaver()
 
-    agent_executor = create_react_agent(llm, tools, checkpointer=memory_saver, state_modifier=SystemMessage(content=SYSTEM_PROMPT))
+    agent_executor = create_react_agent(llm, tools, checkpointer=st.session_state.memory_saver, state_modifier=SystemMessage(content=SYSTEM_PROMPT))
 
     return agent_executor
 
