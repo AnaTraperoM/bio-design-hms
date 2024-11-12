@@ -116,7 +116,7 @@ def addToGoogleSheets(need_dict):
         ]
         creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         client = gspread.authorize(creds)
-        need_sheet = client.open("2024 Healthtech Identify Log").worksheet('Need Statement Log')
+        need_sheet = client.open("Copy of 2024 Healthtech Identify Log").worksheet('Need Statement Log')
 
         headers = need_sheet.row_values(1)
 
@@ -180,7 +180,7 @@ def getExistingObsIDS():
         ]
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
-    obs_log = client.open("2024 Healthtech Identify Log").worksheet("Observation Log")
+    obs_log = client.open("Copy of 2024 Healthtech Identify Log").worksheet("Observation Log")
     obs_ids = obs_log.col_values(1)[1:]
     # obs_descrip = obs_log.col_values(5)[1:]
     obs_titles = obs_log.col_values(2)[1:]
@@ -216,7 +216,7 @@ def update_need_ID():
         ]
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
-    need_sheet = client.open("2024 Healthtech Identify Log").worksheet('Need Statement Log')
+    need_sheet = client.open("Copy of 2024 Healthtech Identify Log").worksheet('Need Statement Log')
     column_values = need_sheet.col_values(1) 
 
     # find all need ids with the same date
@@ -306,7 +306,7 @@ def getExistingObsIDS():
         "https://www.googleapis.com/auth/drive.metadata.readonly"
     ])
     client = gspread.authorize(creds)
-    obs_log = client.open("2024 Healthtech Identify Log").worksheet("Observation Log")
+    obs_log = client.open("Copy of 2024 Healthtech Identify Log").worksheet("Observation Log")
     obs_ids = obs_log.col_values(1)[1:]  # Observation IDs
     obs_titles = obs_log.col_values(2)[1:]  # Observation titles
     
@@ -316,7 +316,7 @@ def getExistingObsIDS():
 
 # Function to display the selected observations
 def display_selected_observations(selected_obs_ids):
-    obs_log = get_google_sheet("2024 Healthtech Identify Log", "Observation Log")
+    obs_log = get_google_sheet("Copy of 2024 Healthtech Identify Log", "Observation Log")
     df = pd.DataFrame(obs_log.get_all_records())
 
     # Iterate over all selected Observation IDs and display the corresponding description
