@@ -114,14 +114,13 @@ Observer: {Observer}"""
 def get_chat_response(user_input):
     if 'chatbot_chain' not in st.session_state:
             st.session_state.chatbot = create_chatbot_chain()
-
-    config = {"configurable": {"thread_id": "abc123"}}
+            st.session_state.chatbot_config = {"configurable": {"thread_id": "abc123"}}
 
     final_message = ''
     for s in st.session_state.chatbot.stream(
             {"messages": [HumanMessage(content=user_input)]},
             stream_mode="values",
-            config=config
+            config=st.session_state.chatbot_config
         ):
         message = s["messages"][-1]
         final_message = message.content
