@@ -7,6 +7,10 @@ from langchain.chains import create_retrieval_chain, create_history_aware_retrie
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain.tools.retriever import create_retriever_tool
+from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
+
 
 from utils.chatbot_parameters import SYSTEM_PROMPT
 from utils.llm_utils import refresh_db
@@ -19,8 +23,6 @@ from utils.google_sheet_utils import (
 )
 
 def fetch_similar_data(user_input):
-    with st.chat_message("user"):
-        st.markdown(user_input)
 
     # Perform similarity search using Pinecone
     updated_observations_db = refresh_db(namespace_to_refresh="observations_temp")
@@ -85,28 +87,77 @@ def fetch_real_time_gsheets_data(user_input):
 def create_chatbot_chain():
     llm=create_llm()
 
-    answer_prompt=ChatPromptTemplate.from_messages([
-        SystemMessage(content=SYSTEM_PROMPT),
-        ("assistant", "I have found the following observations: {observations} and cases: {cases} relevant"),
-        MessagesPlaceholder(variable_name="chat_history"),
-        ("user", "{input}")
-    ])
+    retriever = refresh_db(namespace_to_refresh="observations_temp").as_retriever()
 
-    chatbot_chain = answer_prompt | llm | StrOutputParser()
+    tool = create_retriever_tool(
+        retriever,
+        "observations_retriever",
+        "Searches and returns medical observations.",
+    )
+    tools = [tool]
 
-    return chatbot_chain
+    agent_executor = create_react_agent(llm, tools)
+
+    st.session_state.messages.append(SystemMessage(content=SYSTEM_PROMPT))
+
+    # answer_prompt=ChatPromptTemplate.from_messages([
+    #     SystemMessage(content=SYSTEM_PROMPT),
+    #     ("assistant", "I have found the following observations: {observations} and cases: {cases} relevant"),
+    #     MessagesPlaceholder(variable_name="chat_history"),
+    #     ("user", "{input}")
+    # ])
+
+    # chatbot_chain = answer_prompt | llm | StrOutputParser()
+
+    return agent_executor
 
 def get_chat_response(user_input):
-
     if 'chatbot_chain' not in st.session_state:
-        st.session_state.chatbot = create_chatbot_chain()
+            st.session_state.chatbot = create_chatbot_chain()
 
-    return st.session_state.chatbot.stream({
-        "chat_history": st.session_state.messages,
-        "input": user_input,
-        "observations": get_observation_sheet_as_dict(),
-        "cases": get_case_sheet_as_dict()
-    })
+    st.session_state.messages.append(HumanMessage(content=user_input))
+
+    final_message = ''
+    for s in st.session_state.chatbot.stream(
+        {"messages": st.session_state.messages},
+        stream_mode="values",
+        ):
+        message = s["messages"][-1]
+        final_message += message
+
+    return final_message    
+
+    return st.session_state.chatbot.stream(
+        {"messages": st.session_state.messages},
+        stream_mode="values",
+    )
+
+
+# def create_chatbot_chain():
+#     llm=create_llm()
+
+#     answer_prompt=ChatPromptTemplate.from_messages([
+#         SystemMessage(content=SYSTEM_PROMPT),
+#         ("assistant", "I have found the following observations: {observations} and cases: {cases} relevant"),
+#         MessagesPlaceholder(variable_name="chat_history"),
+#         ("user", "{input}")
+#     ])
+
+#     chatbot_chain = answer_prompt | llm | StrOutputParser()
+
+#     return chatbot_chain
+
+# def get_chat_response(user_input):
+
+#     if 'chatbot_chain' not in st.session_state:
+#         st.session_state.chatbot = create_chatbot_chain()
+
+#     return st.session_state.chatbot.stream({
+#         "chat_history": st.session_state.messages,
+#         "input": user_input,
+#         "observations": get_observation_sheet_as_dict(),
+#         "cases": get_case_sheet_as_dict()
+#     })
 
 
 def update_session(output):
