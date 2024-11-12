@@ -95,9 +95,9 @@ def create_chatbot_chain():
     observation_retriever = refresh_db(namespace_to_refresh=st.session_state.observation_namespace).as_retriever(search_kwargs={'k': 20})
 
     doc_prompt = PromptTemplate.from_template(
-    """Observation ID: {Observation ID}
-Description: {page_content}
-Observer: {Observer}
+    """Observation ID: {Observation ID}\n
+Description: {page_content}\n
+Observer: {Observer}\n
 Date: {Date}"""
     )
 
@@ -112,8 +112,8 @@ Date: {Date}"""
     need_statement_retriever = refresh_db(namespace_to_refresh=st.session_state.need_statement_namespace).as_retriever(search_kwargs={'k': 10})
 
     need_statement_doc_prompt = PromptTemplate.from_template(
-    """Need ID: {need_ID}
-Observation ID: {observation_ID}
+    """Need ID: {need_ID}\n
+Observation ID: {observation_ID}\n
 Statement: {page_content}
 """
     )
@@ -158,7 +158,8 @@ def get_chat_response(user_input):
             config=st.session_state.chatbot_config
         ):
         response_message = s['messages'][-1]
-        st.write(response_message.content)
+        
+        response_message.pretty_print()
 
         response = response_message.content
 
