@@ -58,7 +58,7 @@ def fetch_real_time_gsheets_data(user_input):
 def create_chatbot_chain():
     llm=create_llm()
 
-    retriever = refresh_db(namespace_to_refresh=st.session_state.observation_namespace).as_retriever(search_kwargs={'k': 20})
+    observation_retriever = refresh_db(namespace_to_refresh=st.session_state.observation_namespace).as_retriever(search_kwargs={'k': 20})
 
     doc_prompt = PromptTemplate.from_template(
     """Observation ID: {Observation ID}
@@ -68,11 +68,27 @@ Date: {Date}"""
     )
 
     observation_retriever_tool = create_retriever_tool(
-        retriever,
+        observation_retriever,
         name="observations_retriever",
         description="Searches and returns clinical observations related to the user query.",
         document_prompt=doc_prompt,
 
+    )
+
+    need_statement_retriever = refresh_db(namespace_to_refresh=st.session_state.need_statement_namespace).as_retriever(search_kwargs={'k': 10})
+
+    need_statement_doc_prompt = PromptTemplate.from_template(
+    """Need ID: {need_ID}
+Observation ID: {observation_ID}
+Statement: {page_content}
+"""
+    )
+
+    need_statement_retriever_tool = create_retriever_tool(
+        need_statement_retriever,
+        name="need_statement_retriever",
+        description="Searches and returns need statements related to the user query.",
+        document_prompt=need_statement_doc_prompt,
     )
 
     os.environ["SERPER_API_KEY"] = "1f5fbd41f519e591303f78cb58caf9794ba43dc7"
@@ -84,7 +100,7 @@ Date: {Date}"""
         description="useful for when you need to ask with search",
     )
 
-    tools = [observation_retriever_tool, search_tool]
+    tools = [observation_retriever_tool, search_tool, need_statement_retriever_tool]
 
     memory_saver = MemorySaver()
 

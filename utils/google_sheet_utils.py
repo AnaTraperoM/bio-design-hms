@@ -57,6 +57,11 @@ def get_observation_sheet_as_dict():
     data = observation_sheet.get_all_records()
     return data
 
+def get_need_statement_sheet_as_dict():
+    need_statement_sheet = CLIENT.open(st.session_state.observation_sheet_name).worksheet("Need Statement Log")
+    data = need_statement_sheet.get_all_records()
+    return data
+
 def get_case_descriptions_from_case_ids(case_ids):
     data = get_case_sheet_as_dict()
 
@@ -129,4 +134,21 @@ def sync_with_pinecone():
 
     # st.write("Time taken to sync data: ", time_taken, " seconds")
 
-    st.write("Synced data from ", len(observations_added), " observations")
+    need_statements_in_sheet = get_need_statement_sheet_as_dict()
+
+    need_statements_db = PineconeVectorStore(
+        index_name=st.secrets["pinecone-keys"]["index_to_connect"],
+        namespace=st.session_state.need_statement_namespace,
+        embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
+        pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
+    )
+
+    need_statement_ids = [need_statement['need_ID'] for need_statement in need_statements_in_sheet]
+    need_statement_descriptions = [need_statement['need_statement'] for need_statement in need_statements_in_sheet]
+    need_statement_metadatas = [{k: v for k, v in need_statement.items() if k not in ['need_statement']} for need_statement in need_statements_in_sheet]
+
+    need_statements_added = need_statements_db.add_texts(need_statement_descriptions, metadatas=need_statement_metadatas, ids=need_statement_ids)
+
+
+
+    st.write("Synced data from ", len(observations_added), " observations and ", len(need_statements_added), " need statements")

@@ -19,7 +19,11 @@ def initialize_investigator_session():
        
     if "observation_namespace" not in st.session_state:
         st.session_state.observation_namespace = "observations_temp_v2"
-        sync_with_pinecone()
+
+    if "need_statement_namespace" not in st.session_state:
+        st.session_state.need_statement_namespace = "need_statements_temp_v2"
+
+    sync_with_pinecone()
 
     # Display previous messages
     for message in st.session_state.messages:
