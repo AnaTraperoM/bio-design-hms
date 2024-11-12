@@ -13,6 +13,9 @@ def initialize_investigator_session():
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
+
+    if "observation_sheet_name" not in st.session_state:
+        st.session_state.observation_sheet_name = "Copy of 2024 Healthtech Identify Log"
        
     if "observation_namespace" not in st.session_state:
         st.session_state.observation_namespace = "observations_temp_v2"

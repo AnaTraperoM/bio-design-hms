@@ -53,7 +53,7 @@ def get_case_sheet_as_dict():
     return data
 
 def get_observation_sheet_as_dict():
-    observation_sheet = CLIENT.open("Copy of 2024 Healthtech Identify Log").worksheet("Observation Log")
+    observation_sheet = CLIENT.open(st.session_state.observation_sheet_name).worksheet("Observation Log")
     data = observation_sheet.get_all_records()
     return data
 
