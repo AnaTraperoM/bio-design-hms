@@ -118,7 +118,7 @@ def get_chat_response(user_input):
 
     return st.session_state.chatbot_chain.stream(
             {"messages": [HumanMessage(content=user_input)]},
-            # stream_mode="values",
+            stream_mode="messages",
             config=st.session_state.chatbot_config
         )    
 
