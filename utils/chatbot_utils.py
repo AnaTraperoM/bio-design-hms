@@ -134,7 +134,7 @@ Statement: {page_content}
     #     description="useful for when you need to ask with search",
     # )
 
-    tools = [observation_retriever_tool, need_statement_retriever_tool]
+    tools = [observation_retriever_tool, need_statement_retriever_tool, get_observations_from_need_statements]
 
     memory_saver = MemorySaver()
 
