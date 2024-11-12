@@ -4,11 +4,9 @@ from langchain.callbacks import get_openai_callback
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage 
 
 from utils.login_utils import check_if_already_logged_in
-from utils.google_sheet_utils import create_new_chat_sheet, get_case_descriptions_from_case_ids, sync_with_pinecone
 from utils.page_formatting import add_investigator_formatting
 from utils.initialize_session import initialize_investigator_session
-from utils.chatbot_utils import fetch_similar_data, update_session, fetch_real_time_gsheets_data, create_chatbot_chain
-from utils.chatbot_parameters import SYSTEM_PROMPT
+from utils.chatbot_utils import update_session, get_chat_response
 
 check_if_already_logged_in()
 add_investigator_formatting()
