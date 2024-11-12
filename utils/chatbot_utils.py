@@ -150,7 +150,7 @@ def get_chat_response(user_input):
 
     response =  ""
 
-    st.write("Thinking...")
+    # st.write("Thinking...")
     
     for s in st.session_state.chatbot_chain.stream(
             {"messages": [HumanMessage(content=user_input)]},
@@ -158,7 +158,9 @@ def get_chat_response(user_input):
             config=st.session_state.chatbot_config
         ):
         response_message = s['messages'][-1]
-        response_message.pretty_print()
+        print(response_message.pretty_print())
+
+        response = response_message.content
 
     # return response['agent']['messages'][0].content
     return response
