@@ -87,15 +87,12 @@ def fetch_real_time_gsheets_data(user_input):
 def create_chatbot_chain():
     llm=create_llm()
 
-    retriever = refresh_db(namespace_to_refresh="observations_temp_v22").as_retriever()
+    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever()
 
     doc_prompt = PromptTemplate.from_template(
-        """
-    Observation ID: {Observation ID}
-    Description: {page_content}
-    Observer: {Observer}
-    \n
-        """
+    """Observation ID: {Observation ID}
+Description: {page_content}
+Observer: {Observer}"""
     )
 
     tool = create_retriever_tool(
