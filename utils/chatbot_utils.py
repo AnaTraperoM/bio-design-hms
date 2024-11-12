@@ -1,5 +1,6 @@
 import json
 import os
+from typing import List
 import streamlit as st
 
 from langchain.schema import StrOutputParser
@@ -12,6 +13,7 @@ from langchain.tools.retriever import create_retriever_tool
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_community.utilities import GoogleSerperAPIWrapper
+from langchain_core.tools import tool
 
 
 from utils.chatbot_parameters import SYSTEM_PROMPT
@@ -21,7 +23,8 @@ from utils.google_sheet_utils import (
     get_case_sheet_as_dict, 
     get_observation_sheet_as_dict,
     cases_related_to_observations,
-    observations_related_to_cases
+    observations_related_to_cases,
+    get_need_statement_sheet_as_dict
 )
 
 def fetch_similar_data(user_input):
@@ -53,6 +56,26 @@ def fetch_real_time_gsheets_data(user_input):
             "cases_from_observations": "None",
             "observations_from_cases": "None"
             }
+
+@tool
+def get_observations_from_need_statements(list_of_need_statement_ids: List[str]) -> str:
+    # Gets the observations linked to the need statements
+
+    need_statements_in_sheet = get_need_statement_sheet_as_dict()
+    observations_in_sheet = get_observation_sheet_as_dict()
+
+    need_statements_by_id = {need_statement["need_ID"]: need_statement for need_statement in need_statements_in_sheet.values()}
+    observations_by_id = {observation["Observation ID"]: observation for observation in observations_in_sheet.values()}
+
+    observations = []
+    for need_statement_id in list_of_need_statement_ids:
+        
+        linked_observation_id = need_statements_by_id[need_statement_id]["observation_ID"]
+        observations.append(observations_by_id[linked_observation_id])
+
+    return """
+    Observations linked to the need statements are: {observations}
+"""
 
 
 def create_chatbot_chain():
@@ -87,7 +110,7 @@ Statement: {page_content}
     need_statement_retriever_tool = create_retriever_tool(
         need_statement_retriever,
         name="need_statement_retriever",
-        description="Searches and returns need statements related to the user query.",
+        description="Searches and returns need statements related to the user query. If this is called then the get_observations_from_need_statements has to be called next.",
         document_prompt=need_statement_doc_prompt,
     )
 
