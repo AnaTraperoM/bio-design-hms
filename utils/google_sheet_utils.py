@@ -88,7 +88,7 @@ def observations_related_to_cases(list_of_cases_pinecone):
     return get_observation_descriptions_from_observation_ids(observation_ids)
 
 
-def sync_with_pinecone(observations_namespace='observations_temp', cases_namespace='cases_temp'):
+def sync_with_pinecone(observations_namespace='observations_temp_v2', cases_namespace='cases_temp'):
     """Sync the Google Sheet data with Pinecone"""
     # start_time = datetime.now()
 
@@ -104,7 +104,7 @@ def sync_with_pinecone(observations_namespace='observations_temp', cases_namespa
 
     observation_ids = [observation['Observation ID'] for observation in observations_in_sheet]
     observation_descriptions = [observation['Observation Description'] for observation in observations_in_sheet]
-    observation_metadatas = [{k: v for k, v in observation.items() if k not in ['Observation ID', 'Observation Description']} for observation in observations_in_sheet]
+    observation_metadatas = [{k: v for k, v in observation.items() if k not in ['Observation Description']} for observation in observations_in_sheet]
 
     observations_added = observations_db.add_texts(observation_descriptions, metadatas=observation_metadatas, ids=observation_ids)
 
