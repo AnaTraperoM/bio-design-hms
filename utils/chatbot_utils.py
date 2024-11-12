@@ -59,7 +59,18 @@ def fetch_real_time_gsheets_data(user_input):
 
 @tool
 def get_observations_from_need_statements(list_of_need_statement_ids: List[str]) -> str:
-    # Gets the observations linked to the need statements
+    '''
+    Gets the observations linked to the need statements
+
+    Args:
+    list_of_need_statement_ids: List of need statement IDs
+
+    Returns:
+    str: Observations linked to the need statements
+
+    '''
+
+    assert type(list_of_need_statement_ids) == list, "list_of_need_statement_ids should be a list"
 
     need_statements_in_sheet = get_need_statement_sheet_as_dict()
     observations_in_sheet = get_observation_sheet_as_dict()
