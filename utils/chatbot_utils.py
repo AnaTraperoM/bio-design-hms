@@ -158,7 +158,7 @@ def get_chat_response(user_input):
             config=st.session_state.chatbot_config
         ):
         response_message = s['messages'][-1]
-        print(response_message.pretty_print())
+        st.write(response_message.pretty_print())
 
         response = response_message.content
 
