@@ -70,7 +70,9 @@ def get_observations_from_need_statements(list_of_need_statement_ids: List[str])
 
     '''
 
-    assert type(list_of_need_statement_ids) == list, "list_of_need_statement_ids should be a list"
+    if type(list_of_need_statement_ids) != list:
+        return "tell the user that the list_of_need_statement_ids should be a list"
+
 
     need_statements_in_sheet = get_need_statement_sheet_as_dict()
     observations_in_sheet = get_observation_sheet_as_dict()
