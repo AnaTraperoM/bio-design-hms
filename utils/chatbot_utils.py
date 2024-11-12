@@ -1,4 +1,5 @@
 import json
+import os
 import streamlit as st
 
 from langchain.schema import StrOutputParser
@@ -10,6 +11,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain.tools.retriever import create_retriever_tool
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
+from langchain_community.utilities import GoogleSerperAPIWrapper
 
 
 from utils.chatbot_parameters import SYSTEM_PROMPT
@@ -65,14 +67,24 @@ Observer: {Observer}
 Date: {Date}"""
     )
 
-    tool = create_retriever_tool(
+    observation_retriever_tool = create_retriever_tool(
         retriever,
         name="observations_retriever",
         description="Searches and returns clinical observations related to the user query.",
         document_prompt=doc_prompt,
 
     )
-    tools = [tool]
+
+    os.environ["SERPER_API_KEY"] = "1f5fbd41f519e591303f78cb58caf9794ba43dc7"
+    search = GoogleSerperAPIWrapper()
+
+    search_tool = GoogleSerperAPIWrapper(
+        name="Search for answers on internet",
+        func=search.run,
+        description="useful for when you need to ask with search",
+    )
+
+    tools = [observation_retriever_tool, search_tool]
 
     memory_saver = MemorySaver()
 
