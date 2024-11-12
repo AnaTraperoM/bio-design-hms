@@ -124,7 +124,7 @@ def get_chat_response(user_input):
             config=config
         ):
         message = s["messages"][-1]
-        final_message = message
+        final_message = message.content
 
     return final_message    
 
