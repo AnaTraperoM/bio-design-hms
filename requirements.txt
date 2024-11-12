@@ -14,3 +14,4 @@ google-auth
 google-auth-oauthlib
 google-auth-httplib2
 streamlit-tags
+langgraph==0.2.45
