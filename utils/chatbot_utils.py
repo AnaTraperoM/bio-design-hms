@@ -158,7 +158,7 @@ def get_chat_response(user_input):
         response_message = s['messages'][-1]
         response = response_message.content
 
-        st.write(response_message.pretty_print())
+        st.write(response_message.content)
 
     # return response['agent']['messages'][0].content
     return response
