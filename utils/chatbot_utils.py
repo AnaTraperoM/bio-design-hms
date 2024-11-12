@@ -116,16 +116,11 @@ def get_chat_response(user_input):
             st.session_state.chatbot_chain = create_chatbot_chain()
             st.session_state.chatbot_config = {"configurable": {"thread_id": "abc123"}}
 
-    final_message = ''
-    for s in st.session_state.chatbot_chain.stream(
+    return st.session_state.chatbot_chain.stream(
             {"messages": [HumanMessage(content=user_input)]},
-            stream_mode="values",
+            # stream_mode="values",
             config=st.session_state.chatbot_config
-        ):
-        message = s["messages"][-1]
-        final_message = message.content
-
-    return final_message    
+        )    
 
 
 
