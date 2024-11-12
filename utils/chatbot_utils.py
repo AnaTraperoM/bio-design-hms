@@ -149,6 +149,8 @@ def get_chat_response(user_input):
             st.session_state.chatbot_config = {"configurable": {"thread_id": "abc123"}}
 
     response =  ""
+
+    st.write("Thinking...")
     
     for s in st.session_state.chatbot_chain.stream(
             {"messages": [HumanMessage(content=user_input)]},
@@ -156,9 +158,7 @@ def get_chat_response(user_input):
             config=st.session_state.chatbot_config
         ):
         response_message = s['messages'][-1]
-        response = response_message.content
-
-        st.write(response_message.content)
+        response_message.pretty_print()
 
     # return response['agent']['messages'][0].content
     return response
