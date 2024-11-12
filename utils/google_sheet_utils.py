@@ -88,7 +88,7 @@ def observations_related_to_cases(list_of_cases_pinecone):
     return get_observation_descriptions_from_observation_ids(observation_ids)
 
 
-def sync_with_pinecone(observations_namespace='observations_temp_v2', cases_namespace='cases_temp'):
+def sync_with_pinecone():
     """Sync the Google Sheet data with Pinecone"""
     # start_time = datetime.now()
 
@@ -97,7 +97,7 @@ def sync_with_pinecone(observations_namespace='observations_temp_v2', cases_name
     # Create a Pinecone vector store
     observations_db = PineconeVectorStore(
         index_name=st.secrets["pinecone-keys"]["index_to_connect"],
-        namespace=observations_namespace,
+        namespace=st.session_state.observation_namespace,
         embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
         pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     )
@@ -112,7 +112,7 @@ def sync_with_pinecone(observations_namespace='observations_temp_v2', cases_name
 
     # cases_db = PineconeVectorStore(
     #     index_name=st.secrets["pinecone-keys"]["index_to_connect"],
-    #     namespace=cases_namespace,
+    #     namespace=st.session_state.cases_namespace,
     #     embedding=OpenAIEmbeddings(api_key=st.secrets["openai_key"]),
     #     pinecone_api_key=st.secrets["pinecone-keys"]["api_key"],
     # )

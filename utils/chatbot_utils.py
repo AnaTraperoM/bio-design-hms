@@ -53,46 +53,16 @@ def fetch_real_time_gsheets_data(user_input):
             }
 
 
-# def get_retreiver_chain(vector_store):
-  
-#   llm=create_llm()
-#   retriever = vector_store.as_retriever()
-#   prompt = ChatPromptTemplate.from_messages([
-#       MessagesPlaceholder(variable_name="chat_history"),
-#       ("user", "{input}"),
-#       ("user", "Given the above conversation, generate a search query to look up in order to get information relevant to the conversation")
-#   ])
-#   history_retriver_chain = create_history_aware_retriever(llm, retriever, prompt)
-  
-#   return history_retriver_chain
-
-
-# def get_conversational_rag(history_retriever_chain):
-#   llm=create_llm()
-
-#   answer_prompt=ChatPromptTemplate.from_messages([
-#       MessagesPlaceholder(variable_name="chat_history"),
-#       ("assistant", "I have found the following observations :{observations} and cases: {cases} relevant to the conversation"),
-#       ("user", "{input}")
-#   ])
-
-# #   document_chain = create_stuff_documents_chain(llm, answer_prompt)
-
-#   #create final retrieval chain
-# #   conversational_retrieval_chain = create_retrieval_chain(history_retriever_chain,document_chain)
-#   conversational_retrieval_chain = answer_prompt | llm | StrOutputParser()
-
-#   return conversational_retrieval_chain
-
 def create_chatbot_chain():
     llm=create_llm()
 
-    retriever = refresh_db(namespace_to_refresh="observations_temp_v2").as_retriever(search_kwargs={'k': 20})
+    retriever = refresh_db(namespace_to_refresh=st.session_state.observation_namespace).as_retriever(search_kwargs={'k': 20})
 
     doc_prompt = PromptTemplate.from_template(
     """Observation ID: {Observation ID}
 Description: {page_content}
-Observer: {Observer}"""
+Observer: {Observer}
+Date: {Date}"""
     )
 
     tool = create_retriever_tool(
